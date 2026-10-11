@@ -1,6 +1,25 @@
 import asyncio
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import threading
+import os
 from telethon import TelegramClient, events
 
+# Простой веб-сервер для удовлетворения требований Render Web Service
+class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is running!")
+
+def run_web_server():
+    port = int(os.environ.get("PORT", 10000))
+    server = HTTPServer(('0.0.0.0', port), SimpleHTTPRequestHandler)
+    server.serve_forever()
+
+# Запускаем веб-сервер в отдельном потоке
+threading.Thread(target=run_web_server, daemon=True).start()
+
+# Данные для авторизации Telegram
 api_id = 34240068
 api_hash = 'e2eb01280a3271091b3d88c5e22d447f'
 
